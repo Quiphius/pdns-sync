@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import fileinput
-import psycopg2
+#import psycopg2
 import re
 from domain import Domain
 
@@ -11,6 +11,18 @@ all_domains = {}
 def valid_ip(a):
     pat = re.compile('^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$')
     return pat.match(a) is not None
+
+def find_domain(a):
+    ta = a.split('.')
+    x = len(ta)
+    while x > 1:
+        cur = '.'.join(ta[-x:])
+        print cur
+        if cur in all_domains:
+            print 'found'
+            return all_domains[cur]
+        x -= 1
+    return None
 
 def main():
     for line in fileinput.input():
@@ -30,3 +42,5 @@ def main():
     print all_domains
 
 main()
+print find_domain('flurba.nu')
+print find_domain('foo.se')
