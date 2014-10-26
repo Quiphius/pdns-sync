@@ -2,27 +2,12 @@
 
 import fileinput
 #import psycopg2
-import re
 from domain import Domain
+from utils import valid_ip, find_domain
 
 cur_ttl = 3600
 cur_domain = None
 all_domains = {}
-
-def valid_ip(a):
-    pat = re.compile('^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$')
-    return pat.match(a) is not None
-
-def find_domain(a):
-    ta = a.split('.')
-    x = len(ta)
-    while x > 1:
-        cur = '.'.join(ta[-x:])
-        print(cur)
-        if cur in all_domains:
-            return all_domains[cur]
-        x -= 1
-    return None
 
 def main():
 
@@ -34,7 +19,6 @@ def main():
         if not line:
             continue
         s = line.split()
-        print(s)
         if s[0] =='#':
             continue
         elif s[0] == 'T':
@@ -49,7 +33,7 @@ def main():
         elif s[0] == 'M':
             d.add_mx(s[1], s[2])
         elif s[0] == 'C':
-            find_domain(s[1]).add_cname(s[1], s[2])
+            find_domain(s[1], all_domains).add_cname(s[1], s[2])
         elif valid_ip(s[0]):
             print('Found A')
         else:
