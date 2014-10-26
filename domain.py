@@ -15,16 +15,16 @@ class Domain:
     def __str__(self):
         return '%s %s %s %s' % (self.name, self.ns, self.email, self.ttl)
 
-    def add_ns(self, ns):
-        r = NS(ns, self.ttl)
+    def add_ns(self, ns, ttl):
+        r = NS(ns, ttl)
         self.all_ns.append(r)
 
-    def add_mx(self, prio, mx):
-        r = MX(mx, prio, self.ttl)
+    def add_mx(self, mx, prio, ttl):
+        r = MX(mx, prio, ttl)
         self.all_mx.append(r)
 
-    def add_cname(self, name, alias):
-        r = CNAME(name, alias, self.ttl)
+    def add_cname(self, name, alias, ttl):
+        r = CNAME(name, alias, ttl)
         self.all_cnames.append(r)
 
     def dump_domain(self):
@@ -35,4 +35,3 @@ class Domain:
             print mx
         for cname in self.all_cnames:
             print cname
-
