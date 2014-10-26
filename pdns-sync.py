@@ -3,7 +3,7 @@
 import fileinput
 from domain import Domain
 from utils import valid_ip, find_domain, gen_ptr
-from database import db_connect, db_get_domains
+from database import db_connect, db_get_domains, db_create_domains, db_delete_domains
 
 cur_ttl = 3600
 cur_domain = None
@@ -101,9 +101,11 @@ def sync():
 
     list_domains = all_domains.keys()
     list_db_domains = all_db_domains.keys()
-    print list(set(list_domains) - set(list_db_domains))
-    print list(set(list_db_domains) - set(list_domains))
+    create_list = list(set(list_domains) - set(list_db_domains))
+    delete_list = list(set(list_db_domains) - set(list_domains))
 
+    db_create_domains(create_list)
+    db_delete_domains(delete_list)
 
 main()
 
