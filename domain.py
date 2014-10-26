@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+from records import *
+
 class Domain:
     def __init__(self, name, ns, email, ttl):
         self.name = name
@@ -8,26 +10,29 @@ class Domain:
         self.ttl = ttl
         self.all_ns = []
         self.all_mx = []
-        self.all_cnames = {}
+        self.all_cnames = []
 
     def __str__(self):
         return '%s %s %s %s' % (self.name, self.ns, self.email, self.ttl)
 
     def add_ns(self, ns):
-        self.all_ns.append(ns)
+        r = NS(ns, self.ttl)
+        self.all_ns.append(r)
 
     def add_mx(self, prio, mx):
-        self.all_mx.append((prio, mx))
+        r = MX(mx, prio, self.ttl)
+        self.all_mx.append(r)
 
     def add_cname(self, name, alias):
-        self.all_cnames[name] = alias
+        r = CNAME(name, alias, self.ttl)
+        self.all_cnames.append(r)
 
     def dump_domain(self):
         print self.name, self.ttl, 'SOA', self.ns, self.email
         for ns in self.all_ns:
-            print self.name, self.ttl, 'NS', ns
+            print ns
         for mx in self.all_mx:
-            print self.name, self.ttl, 'MX', mx[0], mx[1]
-        for name, cname in self.all_cnames.items():
-            print name, self.ttl, 'CNAME', cname
+            print mx
+        for cname in self.all_cnames:
+            print cname
 
