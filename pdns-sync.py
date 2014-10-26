@@ -3,10 +3,12 @@
 import fileinput
 from domain import Domain
 from utils import valid_ip, find_domain, gen_ptr
+from database import db_connect, db_get_domains
 
 cur_ttl = 3600
 cur_domain = None
 all_domains = {}
+all_db_domains = {}
 warning = 0
 error = 0
 
@@ -93,13 +95,21 @@ def main():
             print('W: Invalid row %d' % row);
             warning += 1
 
+def sync():
+    db_connect()
+    db_get_domains(all_db_domains)
+
+    list_domains = all_domains.keys()
+    list_db_domains = all_db_domains.keys()
+    print list(set(list_domains) - set(list_db_domains))
+    print list(set(list_db_domains) - set(list_domains))
+
 
 main()
 
-all_domains['oet.nu'].dump_domain()
-all_domains['foo.se'].dump_domain()
-all_domains['0.168.192.in-addr.arpa'].dump_domain()
-
 print('%d error(s) and %d warning(s)' % (error, warning))
 
-print gen_ptr('193.108.43.209')
+if error == 0:
+    sync()
+else:
+    print('Errors found, not syncing')
