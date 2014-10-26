@@ -15,3 +15,10 @@ def find_domain(a, l):
             return l[cur]
         x -= 1
     return None
+
+def gen_ptr(a):
+    ta = a.split('.')
+    ta.reverse()
+    ta.append('in-addr.arpa')
+    r = '.'.join(ta)
+    return r
