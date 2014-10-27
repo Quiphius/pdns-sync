@@ -5,7 +5,7 @@ from domain import Domain
 from utils import valid_ip, find_domain, gen_ptr
 from database import db_connect, db_get_domains, db_create_domains, db_delete_domains
 
-cur_ttl = 3600
+cur_ttl = '3600'
 cur_domain = None
 all_domains = {}
 all_db_domains = {}
@@ -97,7 +97,7 @@ def main():
 
 def sync():
     db_connect()
-    db_get_domains(all_db_domains)
+    all_db_domains = db_get_domains()
 
     list_domains = all_domains.keys()
     list_db_domains = all_db_domains.keys()
@@ -107,9 +107,15 @@ def sync():
     db_create_domains(create_list)
     db_delete_domains(delete_list)
 
+    for i in list_domains:
+        d = all_domains[i]
+        d.sync_domain()
+
 main()
 
 print('%d error(s) and %d warning(s)' % (error, warning))
+
+print all_domains['foo.se'].dump_domain()
 
 if error == 0:
     sync()

@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 from records import *
+from database import db_get_records, db_create_record, db_update_record
 
 class Domain:
     def __init__(self, name, ns, email, ttl):
@@ -37,6 +38,18 @@ class Domain:
         r = PTR(name, addr, ttl)
         self.all_ptr.append(r)
 
+    def sync_domain(self):
+        print('Syncing %s' % self.name)
+        r = db_get_records(self.name, 'SOA')
+        if len(r) == 0:
+            db_create_record(self.name, 'SOA', '%s %s' % (self.ns, self.email), self.ttl, 0)
+        elif len(r) != 1:
+            print('E: Wrong number of SOA records for domain %s' % self.name)
+        else:
+            c = r[0]
+            if c.data != '%s %s' % (self.ns, self.email) or c.ttl != int(self.ttl) or c.prio != 0:
+                db_update_record(c.id, 'SOA', '%s %s' % (self.ns, self.email), self.ttl, 0)
+        
     def dump_domain(self):
         print self.name, self.ttl, 'SOA', self.ns, self.email
         for ns in self.all_ns:
