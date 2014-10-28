@@ -5,6 +5,8 @@ from domain import Domain
 from utils import valid_ip, find_domain, gen_ptr
 from database import db_connect, db_get_domains, db_create_domains, db_delete_domains
 
+typemap = { 'N': 'NS', 'M': 'MX', 'C': 'CNAME' }
+
 cur_ttl = '3600'
 cur_domain = None
 all_domains = {}
@@ -51,7 +53,7 @@ def main():
         elif s[0] == 'N':
             if sl > 1:
                 for ns in s[1:]:
-                    d.add_ns(ns, cur_ttl)
+                    d.add_record(d.name, 'NS', ns, 0, cur_ttl)
             else:
                 print('W: No arguments for NS on line %d' % row)
                 warning += 1
@@ -62,13 +64,13 @@ def main():
                     if x.isdigit():
                         prio = int(x)
                     else:
-                        d.add_mx(x, prio, cur_ttl)
+                        d.add_record(d.name, 'MX', x, prio, cur_ttl)
             else:
                 print('W: No arguments for MX on line %d' % row)
                 warning += 1
         elif s[0] == 'C':
             if sl == 3:
-                find_domain(s[1], all_domains).add_cname(s[1], s[2], cur_ttl)
+                find_domain(s[1], all_domains).add_record(s[1], 'CNAME', s[2], 0, cur_ttl)
             else:
                 print('W: Wrong number of arguments for CNAME on line %d' % row)
                 warning += 1
@@ -77,11 +79,11 @@ def main():
                 for x in s[1:]:
                     d = find_domain(x, all_domains)
                     if d:
-                        d.add_a(x, s[0], cur_ttl)
+                        d.add_record(x, 'A', s[0], 0, cur_ttl)
                         ptr = gen_ptr(s[0])
                         ptrd = find_domain(ptr, all_domains)
                         if ptrd:
-                            ptrd.add_ptr(ptr, x, cur_ttl)
+                            ptrd.add_record(ptr, 'PTR', x, 0, cur_ttl)
                         else:
                             print('W: Missing domain for PTR %s on line %s' % (ptr, row))
                             warning += 1

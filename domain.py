@@ -9,56 +9,46 @@ class Domain:
         self.ns = ns
         self.email = email
         self.ttl = ttl
-        self.all_ns = []
-        self.all_mx = []
-        self.all_cnames = []
-        self.all_a = []
-        self.all_ptr = []
+        self.records = {}
 
     def __str__(self):
         return '%s %s %s %s' % (self.name, self.ns, self.email, self.ttl)
 
-    def add_ns(self, ns, ttl):
-        r = NS(ns, ttl)
-        self.all_ns.append(r)
+    def add_record(self, name, type, data, prio, ttl):
+        if not name in self.records:
+            self.records[name] = {}
+        if not type in self.records[name]:
+            self.records[name][type] = []
 
-    def add_mx(self, mx, prio, ttl):
-        r = MX(mx, prio, ttl)
-        self.all_mx.append(r)
+        r = Record(data, prio, ttl);
+        self.records[name][type].append(r)
 
-    def add_cname(self, name, alias, ttl):
-        r = CNAME(name, alias, ttl)
-        self.all_cnames.append(r)
-
-    def add_a(self, name, addr, ttl):
-        r = A(name, addr, ttl)
-        self.all_a.append(r)
-
-    def add_ptr(self, name, addr, ttl):
-        r = PTR(name, addr, ttl)
-        self.all_ptr.append(r)
-
-    def sync_domain(self):
-        print('Syncing %s' % self.name)
-        r = db_get_records(self.name, 'SOA')
-        if len(r) == 0:
+    def sync_soa(self):
+        if self.name in self.dbrecords and 'SOA' in self.dbrecords[self.name]:
+            soa = self.dbrecords[self.name]['SOA']
+        else:
+            soa = []                
+        if len(soa) == 0:
             db_create_record(self.name, 'SOA', '%s %s' % (self.ns, self.email), self.ttl, 0)
-        elif len(r) != 1:
+        elif len(soa) != 1:
             print('E: Wrong number of SOA records for domain %s' % self.name)
         else:
-            c = r[0]
+            c = soa[0]
             if c.data != '%s %s' % (self.ns, self.email) or c.ttl != int(self.ttl) or c.prio != 0:
+                print 'foo'
                 db_update_record(c.id, 'SOA', '%s %s' % (self.ns, self.email), self.ttl, 0)
-        
+
+    def sync_records(self, n, t):
+        print('%s %s' % (n, t))
+
+    def sync_domain(self):
+        print('Syncing domain %s' % self.name)
+        self.dbrecords = db_get_records(self.name)
+        self.sync_soa()
+        print self.records.keys()
+        for name in self.records.keys():
+            for type in self.records[name].keys():
+                self.sync_records(name, type)
+
     def dump_domain(self):
-        print self.name, self.ttl, 'SOA', self.ns, self.email
-        for ns in self.all_ns:
-            print ns
-        for mx in self.all_mx:
-            print mx
-        for cname in self.all_cnames:
-            print cname
-        for a in self.all_a:
-            print a
-        for ptr in self.all_ptr:
-            print ptr
+        print self.records

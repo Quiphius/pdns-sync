@@ -17,13 +17,17 @@ def db_get_domains():
     cur.close()
     return ret
 
-def db_get_records(domain, type):
-    ret = []
+def db_get_records(domain):
+    ret = {}
     cur = conn.cursor()
-    cur.execute('SELECT * FROM records WHERE domain_id = (SELECT id from domains WHERE name = %s) AND type = %s', (domain, type))
+    cur.execute('SELECT * FROM records WHERE domain_id = (SELECT id from domains WHERE name = %s)', (domain, ))
     for d in cur.fetchall():
-        n = DBRecord(d[0], d[2], d[3], d[4], d[5], d[6])
-        ret.append(n)
+        if not d[2] in ret:
+            ret[d[2]] = {}
+        if not d[3] in ret[d[2]]:
+            ret[d[2]][d[3]] = []
+        n = DBRecord(d[0], d[4], d[5], d[6])
+        ret[d[2]][d[3]].append(n)
     cur.close()
     return ret
 

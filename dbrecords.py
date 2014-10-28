@@ -7,10 +7,8 @@ class DBDomain:
         self.type = type
 
 class DBRecord:
-    def __init__(self, id, name, type, data, ttl, prio):
-        self.name = name
+    def __init__(self, id, data, ttl, prio):
         self.id = id
-        self.type = type
         self.data = data
         self.ttl = ttl
         self.prio = prio
