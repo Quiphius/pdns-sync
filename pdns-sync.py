@@ -117,8 +117,6 @@ main()
 
 print('%d error(s) and %d warning(s)' % (error, warning))
 
-print all_domains['foo.se'].dump_domain()
-
 if error == 0:
     sync()
 else:
