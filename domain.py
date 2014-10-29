@@ -21,7 +21,7 @@ class Domain:
         i = (name, type)
         if i not in self.records:
             self.records[i] = []
-        r = Record(data, prio, ttl);        
+        r = Record(data, prio, ttl);
         self.records[i].append(r)
 
     def sync_record(self, i):
@@ -32,7 +32,7 @@ class Domain:
                     if db.prio != r.prio or db.ttl != r.ttl:
                         print ' - Upd', i
                         db_update_record(db.id, r.ttl, r.prio)
-                        self.updated = True                        
+                        self.updated = True
                     r.used = True
                     found = True
             if not found:
@@ -44,7 +44,7 @@ class Domain:
                 print ' - Add', i
                 db_create_record(self.name, i[0], i[1], r.data, r.ttl, r.prio)
                 self.updated = True
-                    
+
 
     def sync_domain(self):
         print('Syncing domain %s' % self.name)
@@ -64,7 +64,7 @@ class Domain:
         for i in list(record_s & dbrecord_s):
             print 'Upd', i
             self.sync_record(i)
-                
+
 
     def dump_domain(self):
         print self.records
