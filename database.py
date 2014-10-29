@@ -36,9 +36,9 @@ def db_create_record(zone, name, type, data, ttl, prio):
     conn.commit()
     cur.close()
 
-def db_update_record(id, data, ttl, prio):
+def db_update_record(id, ttl, prio):
     cur = conn.cursor()
-    cur.execute('UPDATE records SET content = %s, ttl = %s, prio = %s where id = %s', (data, ttl, prio, id))
+    cur.execute('UPDATE records SET ttl = %s, prio = %s where id = %s', (ttl, prio, id))
     conn.commit()
     cur.close()
 

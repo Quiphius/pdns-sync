@@ -31,7 +31,7 @@ def main():
         elif s[0] == 'T':
             if sl == 2:
                 if s[1].isdigit() and int(s[1]) > 0:
-                    cur_ttl = s[1]
+                    cur_ttl = int(s[1])
                 else:
                     print('W: Not a valid TTL value on line %d' % row)
                     warning += 1
