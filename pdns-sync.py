@@ -7,7 +7,6 @@ from database import db_connect, db_get_domains, db_create_domains, db_delete_do
 
 typemap = { 'N': 'NS', 'M': 'MX', 'C': 'CNAME' }
 
-cur_ttl = '3600'
 cur_domain = None
 all_domains = {}
 all_db_domains = {}
@@ -16,6 +15,7 @@ error = 0
 
 def parse(fname):
     global warning, error
+    cur_ttl = 3600
     row = 0
 
     try:
