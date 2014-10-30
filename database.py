@@ -2,10 +2,11 @@
 
 import psycopg2
 from dbrecords import *
+from config import *
 
 def db_connect():
     global conn
-    conn = psycopg2.connect('dbname=pdns user=pdns host=localhost password=QNv7Yl0zZUfB')
+    conn = psycopg2.connect(DSN)
 
 def db_get_domains():
     ret = {}
