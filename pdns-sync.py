@@ -98,7 +98,7 @@ def parse(fname):
                     print('W: Invalid row %d' % row);
                     warning += 1
     except IOError as e:
-        print '%s: %s' % (n, e.strerror)
+        print('%s: %s' % (n, e.strerror))
 
 def sync():
     db_connect()

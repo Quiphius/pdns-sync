@@ -30,18 +30,15 @@ class Domain:
             for r in self.records[i]:
                 if db.data == r.data:
                     if db.prio != r.prio or db.ttl != r.ttl:
-                        print ' - Upd', i
                         db_update_record(db.id, r.ttl, r.prio)
                         self.updated = True
                     r.used = True
                     found = True
             if not found:
-                print ' - Del', i
                 db_delete_record(db.id)
                 self.updated = True
         for r in self.records[i]:
             if not r.used:
-                print ' - Add', i
                 db_create_record(self.name, i[0], i[1], r.data, r.ttl, r.prio)
                 self.updated = True
 
@@ -52,19 +49,12 @@ class Domain:
         record_s = set(self.records.keys())
         dbrecord_s = set(self.dbrecords.keys())
         for i in list(record_s - dbrecord_s):
-            print 'Add', i
             for r in self.records[i]:
                 db_create_record(self.name, i[0], i[1], r.data, r.ttl, r.prio)
                 self.updated = True
         for i in list(dbrecord_s - record_s):
-            print 'Del', i
             for r in self.dbrecords[i]:
                 db_delete_record(r.id)
                 self.updated = True
         for i in list(record_s & dbrecord_s):
-            print 'Upd', i
             self.sync_record(i)
-
-
-    def dump_domain(self):
-        print self.records
