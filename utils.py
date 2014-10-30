@@ -1,10 +1,21 @@
 #!/usr/bin/env python
 
+import socket
 import re
 
-def valid_ip(a):
-    pat = re.compile('^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$')
-    return pat.match(a) is not None
+def check_ipv4(n):
+    try:
+        socket.inet_pton(socket.AF_INET, n)
+        return True
+    except socket.error:
+        return False
+
+def check_ipv6(n):
+    try:
+        socket.inet_pton(socket.AF_INET6, n)
+        return True
+    except socket.error:
+        return False
 
 def find_domain(a, l):
     ta = a.split('.')

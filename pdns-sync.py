@@ -2,7 +2,7 @@
 
 import fileinput
 from domain import Domain
-from utils import valid_ip, find_domain, gen_ptr
+from utils import find_domain, gen_ptr, check_ipv4, check_ipv6
 from database import db_connect, db_get_domains, db_create_domains, db_delete_domains
 
 typemap = { 'N': 'NS', 'M': 'MX', 'C': 'CNAME' }
@@ -74,7 +74,7 @@ def main():
             else:
                 print('W: Wrong number of arguments for CNAME on line %d' % row)
                 warning += 1
-        elif valid_ip(s[0]):
+        elif check_ipv4(s[0]):
             if sl > 1:
                 for x in s[1:]:
                     d = find_domain(x, all_domains)
