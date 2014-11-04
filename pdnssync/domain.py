@@ -11,7 +11,7 @@ class Domain:
         self.ttl = ttl
         self.records = {}
         self.updated = False
-        soa = Record('%s %s' % (self.ns, self.name), 0, ttl)
+        soa = Record('%s %s' % (self.ns, self.email), 0, ttl)
         self.records[(self.name, 'SOA')] = [soa]
 
     def __str__(self):
@@ -58,3 +58,5 @@ class Domain:
                 self.updated = True
         for i in list(record_s & dbrecord_s):
             self.sync_record(i)
+        if self.updated:
+            print('Domain %s updated' % self.name)

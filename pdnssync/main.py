@@ -1,6 +1,11 @@
 #!/usr/bin/env python
 
-from pdnssync import *
+import argparse
+import os
+from config import parse_config
+from domain import Domain
+from database import db_connect, db_get_domains, db_create_domains, db_delete_domains
+from utils import find_domain, gen_ptr, check_ipv4, check_ipv6
 
 typemap = { 'N': 'NS', 'M': 'MX', 'C': 'CNAME' }
 
@@ -112,3 +117,26 @@ def sync(dsn):
     for i in list_domains:
         d = all_domains[i]
         d.sync_domain()
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-v", "--verbosity", action="count", default=0, help="increase output verbosity")
+    parser.add_argument('files', metavar='file', nargs='+', help='the files to parse')
+    args = parser.parse_args()
+
+    options = parse_config(os.environ['HOME'] + '/.pdnssync.ini')
+    if 'database' not in options or 'dbuser' not in options or 'dbpassword' not in options or 'dbhost' not in options:
+        print('Missing database config in ~/.pdnssync.ini')
+        quit()
+
+    dsn = 'dbname=%s user=%s host=%s password=%s' % (options['database'], options['dbuser'], options['dbhost'], options['dbpassword'])
+
+    for fname in args.files:
+        parse(fname)
+
+    print('%d error(s) and %d warning(s)' % (error, warning))
+
+    if error == 0:
+        sync(dsn)
+    else:
+        print('Errors found, not syncing')
