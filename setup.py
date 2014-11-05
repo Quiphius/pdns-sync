@@ -3,7 +3,7 @@ from setuptools import setup
 setup(name='pdnssync',
     version='0.1',
     description='PowerDNS sync tool',
-    long_description='A tool to read a /etc/hosts-like file and synconize it with the database used by PowerDNS.',
+    long_description='A tool to read a hosts-like file and synconize it with the database used by PowerDNS.',
     classifiers=[
         'Development Status :: 3 - Alpha',
         'License :: OSI Approved :: MIT License',
