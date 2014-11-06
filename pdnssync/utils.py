@@ -1,7 +1,6 @@
-#!/usr/bin/env python
-
 import socket
 import re
+
 
 def check_ipv4(n):
     try:
@@ -10,12 +9,14 @@ def check_ipv4(n):
     except socket.error:
         return False
 
+
 def check_ipv6(n):
     try:
         socket.inet_pton(socket.AF_INET6, n)
         return True
     except socket.error:
         return False
+
 
 def find_domain(a, l):
     ta = a.split('.')
@@ -26,6 +27,7 @@ def find_domain(a, l):
             return l[cur]
         x -= 1
     return None
+
 
 def gen_ptr(a):
     ta = a.split('.')

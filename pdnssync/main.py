@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 import argparse
 import os
 from config import parse_config
@@ -7,7 +5,7 @@ from domain import Domain
 from database import db_connect, db_get_domains, db_create_domains, db_delete_domains
 from utils import find_domain, gen_ptr, check_ipv4, check_ipv6
 
-typemap = { 'N': 'NS', 'M': 'MX', 'C': 'CNAME' }
+typemap = {'N': 'NS', 'M': 'MX', 'C': 'CNAME'}
 
 cur_domain = None
 all_domains = {}
@@ -15,15 +13,18 @@ all_db_domains = {}
 warn = 0
 err = 0
 
+
 def warning(msg, fname, row):
     global warn
     print('W: %s in file %s line %d' % (msg, fname, row))
     warn += 1
 
+
 def error(msg, fname, row):
     global err
     print('E: %s in file %s line %d' % (msg, fname, row))
     err += 1
+
 
 def parse(fname):
     global warn, err
@@ -39,7 +40,7 @@ def parse(fname):
                     continue
                 s = line.split()
                 sl = len(s)
-                if s[0] =='#':
+                if s[0] == '#':
                     continue
                 elif s[0] == 'T':
                     if sl == 2:
@@ -101,6 +102,7 @@ def parse(fname):
     except IOError as e:
         print('%s: %s' % (fname, e.strerror))
 
+
 def sync(dsn):
     db_connect(dsn)
     all_db_domains = db_get_domains()
@@ -116,6 +118,7 @@ def sync(dsn):
     for i in list_domains:
         d = all_domains[i]
         d.sync_domain()
+
 
 def main():
     parser = argparse.ArgumentParser()

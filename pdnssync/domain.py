@@ -1,7 +1,6 @@
-#!/usr/bin/env python
-
 from records import *
 from database import db_get_records, db_create_record, db_update_record, db_delete_record
+
 
 class Domain:
     def __init__(self, name, ns, email, ttl):
@@ -21,7 +20,7 @@ class Domain:
         i = (name, type)
         if i not in self.records:
             self.records[i] = []
-        r = Record(data, prio, ttl);
+        r = Record(data, prio, ttl)
         self.records[i].append(r)
 
     def sync_record(self, i):
@@ -42,7 +41,6 @@ class Domain:
                 db_create_record(self.name, i[0], i[1], r.data, r.ttl, r.prio)
                 self.updated = True
 
-
     def sync_domain(self):
         print('Syncing domain %s' % self.name)
         self.dbrecords = db_get_records(self.name)
@@ -60,3 +58,4 @@ class Domain:
             self.sync_record(i)
         if self.updated:
             print('Domain %s updated' % self.name)
+            print('SOA: %s' % self.records[(self.name, 'SOA')])

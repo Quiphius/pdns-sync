@@ -1,11 +1,11 @@
-#!/usr/bin/env python
-
 import psycopg2
 from dbrecords import *
+
 
 def db_connect(dsn):
     global conn
     conn = psycopg2.connect(dsn)
+
 
 def db_get_domains():
     ret = {}
@@ -16,6 +16,7 @@ def db_get_domains():
         ret[d[1]] = n
     cur.close()
     return ret
+
 
 def db_get_records(domain):
     ret = {}
@@ -30,11 +31,13 @@ def db_get_records(domain):
     cur.close()
     return ret
 
+
 def db_create_record(zone, name, type, data, ttl, prio):
     cur = conn.cursor()
     cur.execute('INSERT INTO records (domain_id, name, type, content, ttl, prio) SELECT id, %s, %s, %s, %s, %s FROM domains WHERE name = %s', (name, type, data, ttl, prio, zone))
     conn.commit()
     cur.close()
+
 
 def db_update_record(id, ttl, prio):
     cur = conn.cursor()
@@ -42,11 +45,13 @@ def db_update_record(id, ttl, prio):
     conn.commit()
     cur.close()
 
+
 def db_delete_record(id):
     cur = conn.cursor()
     cur.execute('DELETE FROM records WHERE id = %s', (id,))
     conn.commit()
     cur.close()
+
 
 def db_create_domains(l):
     cur = conn.cursor()
@@ -54,6 +59,7 @@ def db_create_domains(l):
         cur.execute('INSERT INTO domains (name, type) VALUES (%s, %s)', (d, 'NATIVE'))
     conn.commit()
     cur.close()
+
 
 def db_delete_domains(l):
     cur = conn.cursor()

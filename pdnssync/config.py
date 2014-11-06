@@ -1,5 +1,6 @@
 COMMENT_CHAR = '#'
-OPTION_CHAR =  '='
+OPTION_CHAR = '='
+
 
 def parse_config(filename):
     options = {}

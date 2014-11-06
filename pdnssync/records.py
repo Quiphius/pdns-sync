@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 class Record:
     def __init__(self, data, prio, ttl):
         self.data = data
