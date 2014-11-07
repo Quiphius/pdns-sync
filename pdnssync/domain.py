@@ -1,5 +1,5 @@
 from records import *
-from database import db_get_records, db_create_record, db_update_record, db_delete_record
+from database import Database
 
 
 class Domain:
@@ -23,39 +23,39 @@ class Domain:
         r = Record(data, prio, ttl)
         self.records[i].append(r)
 
-    def sync_record(self, i):
-        for db in self.dbrecords[i]:
+    def sync_record(self, db, i):
+        for dbr in self.dbrecords[i]:
             found = False
             for r in self.records[i]:
-                if db.data == r.data:
-                    if db.prio != r.prio or db.ttl != r.ttl:
-                        db_update_record(db.id, r.ttl, r.prio)
+                if dbr.data == r.data:
+                    if dbr.prio != r.prio or dbr.ttl != r.ttl:
+                        db.update_record(dbr.id, r.ttl, r.prio)
                         self.updated = True
                     r.used = True
                     found = True
             if not found:
-                db_delete_record(db.id)
+                db.delete_record(dbr.id)
                 self.updated = True
         for r in self.records[i]:
             if not r.used:
-                db_create_record(self.name, i[0], i[1], r.data, r.ttl, r.prio)
+                db.create_record(self.name, i[0], i[1], r.data, r.ttl, r.prio)
                 self.updated = True
 
-    def sync_domain(self):
+    def sync_domain(self, db):
         print('Syncing domain %s' % self.name)
-        self.dbrecords = db_get_records(self.name)
+        self.dbrecords = db.get_records(self.name)
         record_s = set(self.records.keys())
         dbrecord_s = set(self.dbrecords.keys())
         for i in list(record_s - dbrecord_s):
             for r in self.records[i]:
-                db_create_record(self.name, i[0], i[1], r.data, r.ttl, r.prio)
+                db.create_record(self.name, i[0], i[1], r.data, r.ttl, r.prio)
                 self.updated = True
         for i in list(dbrecord_s - record_s):
             for r in self.dbrecords[i]:
-                db_delete_record(r.id)
+                db.delete_record(r.id)
                 self.updated = True
         for i in list(record_s & dbrecord_s):
-            self.sync_record(i)
+            self.sync_record(db, i)
         if self.updated:
             print('Domain %s updated' % self.name)
             print('SOA: %s' % self.records[(self.name, 'SOA')])

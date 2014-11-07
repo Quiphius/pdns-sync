@@ -1,70 +1,81 @@
-import psycopg2
-from dbrecords import *
+class DBDomain:
+    def __init__(self, id, name, type):
+        self.name = name
+        self.id = id
+        self.type = type
 
 
-def db_connect(dsn):
-    global conn
-    conn = psycopg2.connect(dsn)
+class DBRecord:
+    def __init__(self, id, data, ttl, prio):
+        self.id = id
+        self.data = data
+        self.ttl = ttl
+        self.prio = prio
 
 
-def db_get_domains():
-    ret = {}
-    cur = conn.cursor()
-    cur.execute('SELECT * FROM domains')
-    for d in cur.fetchall():
-        n = DBDomain(d[0], d[1], d[4])
-        ret[d[1]] = n
-    cur.close()
-    return ret
+class Database:
+    def __init__(self, type, database, user, password, host):
+        if type == 'postgresql':
+            import psycopg2
+            self.conn = psycopg2.connect(database=database, user=user, password=password, host=host)
+        elif type == 'mysql':
+            import MySQLdb
+            self.conn = MySQLdb.connect(db=database, user=user, passwd=password, host=host)
+        else:
+            print('E: no such database type')
+            quit()
 
+    def get_domains(self):
+        ret = {}
+        cur = self.conn.cursor()
+        cur.execute('SELECT * FROM domains')
+        for d in cur.fetchall():
+            n = DBDomain(d[0], d[1], d[4])
+            ret[d[1]] = n
+        cur.close()
+        return ret
 
-def db_get_records(domain):
-    ret = {}
-    cur = conn.cursor()
-    cur.execute('SELECT * FROM records WHERE domain_id = (SELECT id from domains WHERE name = %s)', (domain, ))
-    for d in cur.fetchall():
-        i = (d[2], d[3])
-        if i not in ret:
-            ret[i] = []
-        n = DBRecord(d[0], d[4], d[5], d[6])
-        ret[i].append(n)
-    cur.close()
-    return ret
+    def create_domains(self, l):
+        cur = self.conn.cursor()
+        for d in l:
+            cur.execute('INSERT INTO domains (name, type) VALUES (%s, %s)', (d, 'NATIVE'))
+        self.conn.commit()
+        cur.close()
 
+    def delete_domains(self, l):
+        cur = self.conn.cursor()
+        for d in l:
+            cur.execute('DELETE FROM domains WHERE name = %s', (d,))
+        self.conn.commit()
+        cur.close()
 
-def db_create_record(zone, name, type, data, ttl, prio):
-    cur = conn.cursor()
-    cur.execute('INSERT INTO records (domain_id, name, type, content, ttl, prio) SELECT id, %s, %s, %s, %s, %s FROM domains WHERE name = %s', (name, type, data, ttl, prio, zone))
-    conn.commit()
-    cur.close()
+    def get_records(self, domain):
+        ret = {}
+        cur = self.conn.cursor()
+        cur.execute('SELECT * FROM records WHERE domain_id = (SELECT id from domains WHERE name = %s)', (domain, ))
+        for d in cur.fetchall():
+            i = (d[2], d[3])
+            if i not in ret:
+                ret[i] = []
+            n = DBRecord(d[0], d[4], d[5], d[6])
+            ret[i].append(n)
+        cur.close()
+        return ret
 
+    def create_record(self, zone, name, type, data, ttl, prio):
+        cur = self.conn.cursor()
+        cur.execute('INSERT INTO records (domain_id, name, type, content, ttl, prio) SELECT id, %s, %s, %s, %s, %s FROM domains WHERE name = %s', (name, type, data, ttl, prio, zone))
+        self.conn.commit()
+        cur.close()
 
-def db_update_record(id, ttl, prio):
-    cur = conn.cursor()
-    cur.execute('UPDATE records SET ttl = %s, prio = %s where id = %s', (ttl, prio, id))
-    conn.commit()
-    cur.close()
+    def update_record(self, id, ttl, prio):
+        cur = self.conn.cursor()
+        cur.execute('UPDATE records SET ttl = %s, prio = %s where id = %s', (ttl, prio, id))
+        self.conn.commit()
+        cur.close()
 
-
-def db_delete_record(id):
-    cur = conn.cursor()
-    cur.execute('DELETE FROM records WHERE id = %s', (id,))
-    conn.commit()
-    cur.close()
-
-
-def db_create_domains(l):
-    cur = conn.cursor()
-    for d in l:
-        cur.execute('INSERT INTO domains (name, type) VALUES (%s, %s)', (d, 'NATIVE'))
-    conn.commit()
-    cur.close()
-
-
-def db_delete_domains(l):
-    cur = conn.cursor()
-    for d in l:
-        cur.execute('DELETE FROM records WHERE domain_id = (SELECT id FROM domains WHERE name = %s)', (d,))
-        cur.execute('DELETE FROM domains WHERE name = %s', (d,))
-    conn.commit()
-    cur.close()
+    def delete_record(self, id):
+        cur = self.conn.cursor()
+        cur.execute('DELETE FROM records WHERE id = %s', (id,))
+        self.conn.commit()
+        cur.close()

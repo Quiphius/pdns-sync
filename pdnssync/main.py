@@ -2,7 +2,7 @@ import argparse
 import os
 from config import parse_config
 from domain import Domain
-from database import db_connect, db_get_domains, db_create_domains, db_delete_domains
+from database import Database
 from utils import find_domain, gen_ptr, check_ipv4, check_ipv6
 
 typemap = {'N': 'NS', 'M': 'MX', 'C': 'CNAME'}
@@ -103,21 +103,20 @@ def parse(fname):
         print('%s: %s' % (fname, e.strerror))
 
 
-def sync(dsn):
-    db_connect(dsn)
-    all_db_domains = db_get_domains()
+def sync(db):
+    all_db_domains = db.get_domains()
 
     list_domains = all_domains.keys()
     list_db_domains = all_db_domains.keys()
     create_list = list(set(list_domains) - set(list_db_domains))
     delete_list = list(set(list_db_domains) - set(list_domains))
 
-    db_create_domains(create_list)
-    db_delete_domains(delete_list)
+    db.create_domains(create_list)
+    db.delete_domains(delete_list)
 
     for i in list_domains:
         d = all_domains[i]
-        d.sync_domain()
+        d.sync_domain(db)
 
 
 def main():
@@ -132,14 +131,13 @@ def main():
         print('Missing database config in ~/.pdnssync.ini')
         quit()
 
-    dsn = 'dbname=%s user=%s host=%s password=%s' % (options['database'], options['dbuser'], options['dbhost'], options['dbpassword'])
-
     for fname in args.files:
         parse(fname)
 
     print('%d error(s) and %d warning(s)' % (err, warn))
 
     if err == 0 and (not args.werror or warn == 0):
-        sync(dsn)
+        db = Database('postgresql', options['database'], options['dbuser'], options['dbpassword'], options['dbhost'])
+        sync(db)
     else:
         print('Errors found, not syncing')
