@@ -84,3 +84,6 @@ class Domain:
             print('Domain %s updated' % self.name)
             self.update_serial()
             db.update_soa(self.name, self.soa_content)
+
+    def validate(self):
+        print 'Validate %s' % self.name

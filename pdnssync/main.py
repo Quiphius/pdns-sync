@@ -109,7 +109,7 @@ def parse(fname):
                                     ptrd.add_record(ptr, 'PTR', x, 0, cur_ttl)
                                 else:
                                     warning('Missing domain for PTR %s' % ptr, fname, row)
-                                        
+
                             else:
                                 warning('Missing domain for AAAA %s' % x, fname, row)
                     else:
@@ -119,6 +119,11 @@ def parse(fname):
                     warning('Invalid row', fname, row)
     except IOError as e:
         print('%s: %s' % (fname, e.strerror))
+
+
+def validate():
+    for d in all_domains.keys():
+        all_domains[d].validate()
 
 
 def sync(db):
@@ -145,12 +150,14 @@ def main():
     args = parser.parse_args()
 
     options = parse_config(os.environ['HOME'] + '/.pdnssync.ini')
-    if 'database' not in options or 'dbuser' not in options or 'dbpassword' not in options or 'dbhost' not in options:
+    if 'type' not in options or 'database' not in options or 'dbuser' not in options or 'dbpassword' not in options or 'dbhost' not in options:
         print('Missing database config in ~/.pdnssync.ini')
         quit()
 
     for fname in args.files:
         parse(fname)
+
+    validate()
 
     print('%d error(s) and %d warning(s)' % (err, warn))
 

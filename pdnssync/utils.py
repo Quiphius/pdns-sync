@@ -44,6 +44,7 @@ def gen_ptr_ipv6(a):
     r = '.'.join(ta)
     return r
 
+
 def expand_ipv6(addr):
     parts = addr.split(':')
     missing = 8 - len(parts) + 1
