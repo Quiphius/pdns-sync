@@ -29,9 +29,31 @@ def find_domain(a, l):
     return None
 
 
-def gen_ptr(a):
+def gen_ptr_ipv4(a):
     ta = a.split('.')
     ta.reverse()
     ta.append('in-addr.arpa')
     r = '.'.join(ta)
     return r
+
+
+def gen_ptr_ipv6(a):
+    ta = list(a)
+    ta.reverse()
+    ta.append('ip6.arpa')
+    r = '.'.join(ta)
+    return r
+
+def expand_ipv6(addr):
+    parts = addr.split(':')
+    missing = 8 - len(parts) + 1
+    res = ''
+
+    for part in parts:
+        if part:
+            res += ('0000' + part)[-4:]
+        else:
+            while missing:
+                res += '0000'
+                missing -= 1
+    return res

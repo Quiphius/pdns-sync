@@ -3,7 +3,7 @@ import os
 from config import parse_config
 from domain import Domain
 from database import Database
-from utils import find_domain, gen_ptr, check_ipv4, check_ipv6
+from utils import *
 
 typemap = {'N': 'NS', 'M': 'MX', 'C': 'CNAME'}
 
@@ -87,7 +87,7 @@ def parse(fname):
                             d = find_domain(x, all_domains)
                             if d:
                                 d.add_record(x, 'A', s[0], 0, cur_ttl)
-                                ptr = gen_ptr(s[0])
+                                ptr = gen_ptr_ipv4(s[0])
                                 ptrd = find_domain(ptr, all_domains)
                                 if ptrd:
                                     ptrd.add_record(ptr, 'PTR', x, 0, cur_ttl)
@@ -97,6 +97,24 @@ def parse(fname):
                                 warning('Missing domain for A %s' % x, fname, row)
                     else:
                         warning('No names for A', fname, row)
+                elif check_ipv6(s[0]):
+                    if sl > 1:
+                        for x in s[1:]:
+                            d = find_domain(x, all_domains)
+                            if d:
+                                d.add_record(x, 'AAAA', s[0], 0, cur_ttl)
+                                ptr = gen_ptr_ipv6(expand_ipv6(s[0]))
+                                ptrd = find_domain(ptr, all_domains)
+                                if ptrd:
+                                    ptrd.add_record(ptr, 'PTR', x, 0, cur_ttl)
+                                else:
+                                    warning('Missing domain for PTR %s' % ptr, fname, row)
+                                        
+                            else:
+                                warning('Missing domain for AAAA %s' % x, fname, row)
+                    else:
+                        warning('No names for AAAA', fname, row)
+                    print "Found ipv6-address"
                 else:
                     warning('Invalid row', fname, row)
     except IOError as e:
@@ -137,7 +155,7 @@ def main():
     print('%d error(s) and %d warning(s)' % (err, warn))
 
     if err == 0 and (not args.werror or warn == 0):
-        db = Database('postgresql', options['database'], options['dbuser'], options['dbpassword'], options['dbhost'])
+        db = Database(options['type'], options['database'], options['dbuser'], options['dbpassword'], options['dbhost'])
         sync(db)
     else:
         print('Errors found, not syncing')

@@ -33,7 +33,7 @@ class Domain:
 
     def update_serial(self):
         d = datetime.now().strftime('%Y%m%d')
-        if d == self.serial[:8]:
+        if d == str(self.serial)[:8]:
             self.serial = str(int(self.serial) + 1)
         else:
             self.serial = d + '00'
