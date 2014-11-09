@@ -1,3 +1,4 @@
+from datetime import datetime
 from database import Database
 
 
@@ -17,11 +18,26 @@ class Domain:
         self.ttl = ttl
         self.records = {}
         self.updated = False
-        soa = Record('%s %s' % (self.ns, self.email), 0, ttl)
+        self.serial = 0
+
+    def gen_soa(self):
+        self.soa_content = '%s %s %s 86400 7200 604800 172800' % (self.ns, self.email, self.serial)
+        soa = Record(self.soa_content, 0, self.ttl)
         self.records[(self.name, 'SOA')] = [soa]
 
-    def __str__(self):
-        return '%s %s %s %s' % (self.name, self.ns, self.email, self.ttl)
+    def get_serial(self):
+        if (self.name, 'SOA') in self.dbrecords:
+            r = self.dbrecords[(self.name, 'SOA')][0]
+            self.serial = r.data.split(' ')[2]
+        self.gen_soa()
+
+    def update_serial(self):
+        d = datetime.now().strftime('%Y%m%d')
+        if d == self.serial[:8]:
+            self.serial = str(int(self.serial) + 1)
+        else:
+            self.serial = d + '00'
+        self.gen_soa()
 
     def add_record(self, name, type, data, prio, ttl):
         i = (name, type)
@@ -51,6 +67,7 @@ class Domain:
     def sync_domain(self, db):
         print('Syncing domain %s' % self.name)
         self.dbrecords = db.get_records(self.name)
+        self.get_serial()
         record_s = set(self.records.keys())
         dbrecord_s = set(self.dbrecords.keys())
         for i in list(record_s - dbrecord_s):
@@ -65,4 +82,5 @@ class Domain:
             self.sync_record(db, i)
         if self.updated:
             print('Domain %s updated' % self.name)
-            print('SOA: %s' % self.records[(self.name, 'SOA')])
+            self.update_serial()
+            db.update_soa(self.name, self.soa_content)

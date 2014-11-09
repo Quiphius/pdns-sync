@@ -38,7 +38,7 @@ class Database:
     def create_domains(self, l):
         cur = self.conn.cursor()
         for d in l:
-            cur.execute('INSERT INTO domains (name, type) VALUES (%s, %s)', (d, 'NATIVE'))
+            cur.execute('INSERT INTO domains (name, type) VALUES (%s, \'NATIVE\')', (d, ))
         self.conn.commit()
         cur.close()
 
@@ -49,10 +49,10 @@ class Database:
         self.conn.commit()
         cur.close()
 
-    def get_records(self, domain):
+    def get_records(self, zone):
         ret = {}
         cur = self.conn.cursor()
-        cur.execute('SELECT * FROM records WHERE domain_id = (SELECT id from domains WHERE name = %s)', (domain, ))
+        cur.execute('SELECT * FROM records WHERE domain_id = (SELECT id from domains WHERE name = %s)', (zone, ))
         for d in cur.fetchall():
             i = (d[2], d[3])
             if i not in ret:
@@ -77,5 +77,11 @@ class Database:
     def delete_record(self, id):
         cur = self.conn.cursor()
         cur.execute('DELETE FROM records WHERE id = %s', (id,))
+        self.conn.commit()
+        cur.close()
+
+    def update_soa(self, zone, content):
+        cur = self.conn.cursor()
+        cur.execute('UPDATE records set content = %s WHERE type = \'SOA\' AND domain_id = (SELECT id from domains WHERE name = %s)', (content, zone))
         self.conn.commit()
         cur.close()
