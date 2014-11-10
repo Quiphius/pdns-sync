@@ -114,7 +114,6 @@ def parse(fname):
                                 warning('Missing domain for AAAA %s' % x, fname, row)
                     else:
                         warning('No names for AAAA', fname, row)
-                    print "Found ipv6-address"
                 else:
                     warning('Invalid row', fname, row)
     except IOError as e:

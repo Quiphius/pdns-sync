@@ -52,7 +52,7 @@ class Database:
     def get_records(self, zone):
         ret = {}
         cur = self.conn.cursor()
-        cur.execute('SELECT * FROM records WHERE domain_id = (SELECT id from domains WHERE name = %s)', (zone, ))
+        cur.execute('SELECT * FROM records WHERE domain_id = (SELECT id from domains WHERE name = %s) AND type != \'\'', (zone, ))
         for d in cur.fetchall():
             i = (d[2], d[3])
             if i not in ret:
