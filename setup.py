@@ -24,6 +24,7 @@ setup(name='pdnssync',
         'console_scripts': ['pdns-sync=pdnssync.main:main'],
     },
     install_requires=[
+        'MySQL-python',
         'psycopg2',
     ],
     platforms=[
