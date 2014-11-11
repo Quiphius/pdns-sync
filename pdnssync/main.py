@@ -84,13 +84,17 @@ def parse(fname):
                 elif check_ipv4(s[0]):
                     if sl > 1:
                         for x in s[1:]:
+                            force = False
+                            if x[0] == '*':
+                                force = True
+                                x = x[1:]
                             d = find_domain(x, all_domains)
                             if d:
                                 d.add_record(x, 'A', s[0], 0, cur_ttl)
                                 ptr = gen_ptr_ipv4(s[0])
                                 ptrd = find_domain(ptr, all_domains)
                                 if ptrd:
-                                    ptrd.add_record(ptr, 'PTR', x, 0, cur_ttl)
+                                    ptrd.add_record_uniq(ptr, 'PTR', x, 0, cur_ttl, force)
                                 else:
                                     warning('Missing domain for PTR %s' % ptr, fname, row)
                             else:
@@ -106,7 +110,7 @@ def parse(fname):
                                 ptr = gen_ptr_ipv6(expand_ipv6(s[0]))
                                 ptrd = find_domain(ptr, all_domains)
                                 if ptrd:
-                                    ptrd.add_record(ptr, 'PTR', x, 0, cur_ttl)
+                                    ptrd.add_record_uniq(ptr, 'PTR', x, 0, cur_ttl)
                                 else:
                                     warning('Missing domain for PTR %s' % ptr, fname, row)
 
@@ -118,6 +122,7 @@ def parse(fname):
                     warning('Invalid row', fname, row)
     except IOError as e:
         print('%s: %s' % (fname, e.strerror))
+        err += 1
 
 
 def validate():
@@ -143,7 +148,7 @@ def sync(db):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("-v", "--verbosity", action="count", default=0, help="increase output verbosity")
+    parser.add_argument("-v", "--verbose", action="count", default=0, help="increase output verbosity")
     parser.add_argument("-w", "--werror", action="store_true", help="also break on warnings")
     parser.add_argument('files', metavar='file', nargs='+', help='the files to parse')
     args = parser.parse_args()

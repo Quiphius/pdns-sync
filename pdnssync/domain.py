@@ -1,3 +1,4 @@
+import os
 from datetime import datetime
 from database import Database
 
@@ -38,6 +39,12 @@ class Domain:
         else:
             self.serial = d + '00'
         self.gen_soa()
+
+    def add_record_uniq(self, name, type, data, prio, ttl, force = False):
+        i = (name, type)
+        if i not in self.records or force:
+            r = Record(data, prio, ttl)
+            self.records[i] = [r]
 
     def add_record(self, name, type, data, prio, ttl):
         i = (name, type)
@@ -84,6 +91,7 @@ class Domain:
             print('Domain %s updated' % self.name)
             self.update_serial()
             db.update_soa(self.name, self.soa_content)
+            os.system('pdnssec rectify-zone %s' % self.name)
 
     def validate(self):
         print 'Validate %s' % self.name
