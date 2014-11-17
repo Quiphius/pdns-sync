@@ -1,7 +1,8 @@
 from setuptools import setup
 
-setup(name='pdnssync',
-    version='0.1',
+setup(
+    name='pdnssync',
+    version='0.2',
     description='PowerDNS sync tool',
     long_description='A tool to read a hosts-like file and synconize it with the database used by PowerDNS.',
     classifiers=[
@@ -30,4 +31,5 @@ setup(name='pdnssync',
     platforms=[
         'any',
     ],
-    zip_safe=False)
+    zip_safe=False
+)
