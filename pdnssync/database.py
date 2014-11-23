@@ -1,11 +1,11 @@
-class DBDomain:
+class DBDomain(object):
     def __init__(self, id, name, type):
         self.name = name
         self.id = id
         self.type = type
 
 
-class DBRecord:
+class DBRecord(object):
     def __init__(self, id, data, ttl, prio):
         self.id = id
         self.data = data
@@ -13,7 +13,7 @@ class DBRecord:
         self.prio = prio
 
 
-class Database:
+class Database(object):
     def __init__(self, type, database, user, password, host):
         if type == 'postgresql':
             import psycopg2

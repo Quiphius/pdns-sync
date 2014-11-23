@@ -3,7 +3,7 @@ from datetime import datetime
 from database import Database
 
 
-class Record:
+class Record(object):
     def __init__(self, data, prio, ttl):
         self.data = data
         self.prio = prio
@@ -11,7 +11,7 @@ class Record:
         self.used = False
 
 
-class Domain:
+class Domain(object):
     def __init__(self, name, ns, email, ttl):
         self.name = name
         self.ns = ns
@@ -40,7 +40,7 @@ class Domain:
             self.serial = d + '00'
         self.gen_soa()
 
-    def add_record_uniq(self, name, type, data, prio, ttl, force = False):
+    def add_record_uniq(self, name, type, data, prio, ttl, force=False):
         i = (name, type)
         if i not in self.records or force:
             r = Record(data, prio, ttl)
