@@ -21,6 +21,9 @@ class Database(object):
         elif type == 'mysql':
             import MySQLdb
             self.conn = MySQLdb.connect(db=database, user=user, passwd=password, host=host)
+        elif type == 'sqlite':
+            import sqlite3
+            self.conn = sqlite3.connect(database=database)
         else:
             print('E: no such database type')
             quit()

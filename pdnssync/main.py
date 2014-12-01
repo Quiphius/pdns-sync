@@ -4,30 +4,16 @@ from config import parse_config
 from domain import Domain
 from database import Database
 from utils import *
+from error import *
 
 typemap = {'N': 'NS', 'M': 'MX', 'C': 'CNAME'}
 
 cur_domain = None
 all_domains = {}
 all_db_domains = {}
-warn = 0
-err = 0
-
-
-def warning(msg, fname, row):
-    global warn
-    print('W: %s in file %s line %d' % (msg, fname, row))
-    warn += 1
-
-
-def error(msg, fname, row):
-    global err
-    print('E: %s in file %s line %d' % (msg, fname, row))
-    err += 1
 
 
 def parse(fname):
-    global warn, err
     cur_ttl = 3600
     row = 0
 
@@ -117,12 +103,11 @@ def parse(fname):
             else:
                 warning('Invalid row', fname, row)
     except IOError as e:
-        print('%s: %s' % (fname, e.strerror))
-        err += 1
+        ioerror(e.strerror, fname)
 
 
 def validate():
-    for d in all_domains.keys():
+    for d in all_domains:
         all_domains[d].validate()
 
 
@@ -146,10 +131,16 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("-v", "--verbose", action="count", default=0, help="increase output verbosity")
     parser.add_argument("-w", "--werror", action="store_true", help="also break on warnings")
+    parser.add_argument("-c", "--config", help="specify config file")
     parser.add_argument('files', metavar='file', nargs='+', help='the files to parse')
     args = parser.parse_args()
 
-    options = parse_config(os.environ['HOME'] + '/.pdnssync.ini')
+    if args.config:
+        config = args.config
+    else:
+        config = os.environ['HOME'] + '/.pdnssync.ini'
+
+    options = parse_config(config)
     if 'type' not in options or 'database' not in options or 'dbuser' not in options or 'dbpassword' not in options or 'dbhost' not in options:
         print('Missing database config in ~/.pdnssync.ini')
         quit()
@@ -158,6 +149,9 @@ def main():
         parse(fname)
 
     validate()
+
+    err = get_err()
+    warn = get_warn()
 
     print('%d error(s) and %d warning(s)' % (err, warn))
 
