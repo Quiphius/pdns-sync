@@ -127,7 +127,7 @@ def sync(db):
         d.sync_domain(db)
 
 
-def main():
+def sync():
     parser = argparse.ArgumentParser()
     parser.add_argument("-v", "--verbose", action="count", default=0, help="increase output verbosity")
     parser.add_argument("-w", "--werror", action="store_true", help="also break on warnings")
@@ -160,3 +160,6 @@ def main():
         sync(db)
     else:
         print('Errors found, not syncing')
+
+def export():
+    print "Export"
