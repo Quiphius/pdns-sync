@@ -22,8 +22,8 @@ setup(
     license='MIT',
     packages=['pdnssync'],
     entry_points={
-        'console_scripts': ['pdns-sync=pdnssync.main:sync',
-                            'pdns-export=pdnssync.main:export'],
+        'console_scripts': ['pdns-sync=pdnssync.main:do_sync',
+                            'pdns-export=pdnssync.main:do_export'],
     },
     install_requires=[
         'MySQL-python',
