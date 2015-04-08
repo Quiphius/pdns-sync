@@ -126,6 +126,41 @@ def sync(db):
         d = all_domains[i]
         d.sync_domain(db)
 
+def export(db):
+    all_db_domain = db.get_domains()
+    for d in all_db_domain:
+        print "# %s" % d
+        records = db.get_records(d)
+        soa = records[(d, 'SOA')][0].data.split(' ')
+        print "D %s %s %s" % (d, soa[0], soa[1])
+
+        if (d, 'NS') in records:
+            ns = records[(d, 'NS')]
+            ns_names = []
+            for i in ns:
+                ns_names.append(i.data)
+            print "N %s" % ' '.join(ns_names)
+
+        if (d, 'MX') in records:
+            mx = records[(d, 'MX')]
+            mx_names = []
+            for i in mx:
+                mx_names.append("%s %s" % (i.prio, i.data))
+            print "M %s" % ' '.join(mx_names)
+
+        for i in records:
+            if i[1] == 'A':
+                for j in records[i]:
+                    print "%s %s" % (j.data, i[0])
+            if i[1] == 'AAAA':
+                for j in records[i]:
+                    print "%s %s" % (j.data, i[0])
+            if i[1] == 'CNAME':
+                for j in records[i]:
+                    print "C %s %s" % (i[0], j.data)
+
+        print
+
 
 def do_sync():
     parser = argparse.ArgumentParser()
@@ -163,4 +198,19 @@ def do_sync():
 
 
 def do_export():
-    print "Export"
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-c", "--config", help="specify config file")
+    args = parser.parse_args()
+
+    if args.config:
+        config = args.config
+    else:
+        config = os.environ['HOME'] + '/.pdnssync.ini'
+
+    options = parse_config(config)
+    if 'type' not in options or 'database' not in options or 'dbuser' not in options or 'dbpassword' not in options or 'dbhost' not in options:
+        print('Missing database config in ~/.pdnssync.ini')
+        quit()
+
+    db = Database(options['type'], options['database'], options['dbuser'], options['dbpassword'], options['dbhost'])
+    export(db)
