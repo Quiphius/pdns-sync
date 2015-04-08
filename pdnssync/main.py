@@ -68,7 +68,7 @@ def parse(fname):
                 if sl > 1:
                     for x in s[1:]:
                         force = False
-                        if x[0] == '*':
+                        if x[0] == '~':
                             force = True
                             x = x[1:]
                         d = find_domain(x, all_domains)
