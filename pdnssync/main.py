@@ -3,14 +3,15 @@ import os
 from config import parse_config
 from domain import Domain
 from database import Database
-from utils import *
-from error import *
+from utils import find_domain, check_ipv4, check_ipv6, gen_ptr_ipv4, gen_ptr_ipv6, expand_ipv6
+from error import warning, error, ioerror, get_warn, get_err
 
 typemap = {'N': 'NS', 'M': 'MX', 'C': 'CNAME'}
 
 cur_domain = None
 all_domains = {}
 all_db_domains = {}
+all_records = {}
 
 
 def parse(fname):
@@ -38,7 +39,6 @@ def parse(fname):
                     if s[1] not in all_domains:
                         d = Domain(s[1], s[2], s[3], cur_ttl)
                         all_domains[s[1]] = d
-                        current_domain = d
                     else:
                         error('Duplicate domain %s' % s[1], fname, row)
                 else:

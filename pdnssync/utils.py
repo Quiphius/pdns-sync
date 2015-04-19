@@ -1,5 +1,4 @@
 import socket
-import re
 
 
 def check_ipv4(n):
