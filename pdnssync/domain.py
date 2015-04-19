@@ -1,6 +1,5 @@
 import os
 from datetime import datetime
-from database import Database
 
 
 class Record(object):
