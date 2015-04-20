@@ -11,7 +11,7 @@ class Record(object):
 
 
 class Domain(object):
-    def __init__(self, name, ns, email, ttl):
+    def __init__(self, name, ns, email, ttl, refresh=86400, retry=7200, expire=604800, minimum=300):
         self.name = name
         self.ns = ns
         self.email = email
@@ -19,9 +19,13 @@ class Domain(object):
         self.records = {}
         self.updated = False
         self.serial = 0
+        self.refresh = refresh
+        self.retry = retry
+        self.expire = expire
+        self.minimum = minimum
 
     def gen_soa(self):
-        self.soa_content = '%s %s %s 86400 7200 604800 172800' % (self.ns, self.email, self.serial)
+        self.soa_content = '%s %s %s %s %s %s %s' % (self.ns, self.email, self.serial, self.refresh, self.retry, self.expire, self.minimum)
         soa = Record(self.soa_content, 0, self.ttl)
         self.records[(self.name, 'SOA')] = [soa]
 
