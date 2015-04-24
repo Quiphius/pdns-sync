@@ -43,6 +43,9 @@ class Domain(object):
         r = Record(data, prio, ttl)
         self.records[i].append(r)
 
+    def add(self, k, l):
+        self.records[k] = l
+
     def sync_record(self, db, i):
         for dbr in self.dbrecords[i]:
             found = False

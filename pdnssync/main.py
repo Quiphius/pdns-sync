@@ -84,8 +84,6 @@ def do_sync():
     for fname in args.files:
         parse(fname)
 
-    print all_records
-
     assign()
 
     validate()

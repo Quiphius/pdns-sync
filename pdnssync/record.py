@@ -5,9 +5,6 @@ class Record(object):
         self.ttl = ttl
         self.used = False
 
-    def __repr__(self):
-        return self.data
-
 
 class RecordList(object):
     def __init__(self):
@@ -25,9 +22,3 @@ class RecordList(object):
         if i not in self.records or force:
             r = Record(data, prio, ttl)
             self.records[i] = [r]
-
-    def __repr__(self):
-        ret = ""
-        for l in self.records:
-            ret += "%s %s\n" % (l, self.records[l])
-        return ret
