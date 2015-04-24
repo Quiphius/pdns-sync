@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='pdnssync',
-    version='0.2',
+    version='0.3',
     description='PowerDNS sync tool',
     long_description='A tool to read a hosts-like file and synconize it with the database used by PowerDNS.',
     classifiers=[

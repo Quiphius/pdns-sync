@@ -2,7 +2,7 @@ import argparse
 import os
 from config import parse_config
 from database import Database
-from parse import parse, assign, all_domains, all_records
+from parse import parse, assign, all_domains
 from error import get_warn, get_err
 
 
