@@ -2,19 +2,23 @@ import argparse
 import os
 from config import parse_config
 from database import Database
-from parse import parse, assign, all_domains
+from parse import Parser
 from error import get_warn, get_err
+
+parser = Parser()
 
 
 def validate():
-    for d in all_domains:
-        all_domains[d].validate()
+    domains = parser.get_domains()
+    for d in domains:
+        domains[d].validate()
 
 
 def sync(db):
     all_db_domains = db.get_domains()
+    all_domains = parser.get_domains()
 
-    list_domains = all_domains.keys()
+    list_domains = all_domains.keys() 
     list_db_domains = all_db_domains.keys()
     create_list = list(set(list_domains) - set(list_db_domains))
     delete_list = list(set(list_db_domains) - set(list_domains))
@@ -64,12 +68,12 @@ def export(db):
 
 
 def do_sync():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("-v", "--verbose", action="count", default=0, help="increase output verbosity")
-    parser.add_argument("-w", "--werror", action="store_true", help="also break on warnings")
-    parser.add_argument("-c", "--config", help="specify config file")
-    parser.add_argument('files', metavar='file', nargs='+', help='the files to parse')
-    args = parser.parse_args()
+    aparser = argparse.ArgumentParser()
+    aparser.add_argument("-v", "--verbose", action="count", default=0, help="increase output verbosity")
+    aparser.add_argument("-w", "--werror", action="store_true", help="also break on warnings")
+    aparser.add_argument("-c", "--config", help="specify config file")
+    aparser.add_argument('files', metavar='file', nargs='+', help='the files to parse')
+    args = aparser.parse_args()
 
     if args.config:
         config = args.config
@@ -82,9 +86,9 @@ def do_sync():
         quit()
 
     for fname in args.files:
-        parse(fname)
+        parser.parse(fname)
 
-    assign()
+    parser.assign()
 
     validate()
 
