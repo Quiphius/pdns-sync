@@ -71,21 +71,8 @@ def do_sync():
     aparser = argparse.ArgumentParser()
     aparser.add_argument("-v", "--verbose", action="count", default=0, help="increase output verbosity")
     aparser.add_argument("-w", "--werror", action="store_true", help="also break on warnings")
-    aparser.add_argument("-c", "--config", help="specify config file")
     aparser.add_argument('files', metavar='file', nargs='+', help='the files to parse')
     args = aparser.parse_args()
-
-    if args.config:
-        config = args.config
-    else:
-        config = os.environ['HOME'] + '/.pdnssync.ini'
-        
-    print('PDNS_FOO = %s' % os.environ['PDNS_FOO'])
-
-    options = parse_config(config)
-    if 'type' not in options or 'database' not in options or 'dbuser' not in options or 'dbpassword' not in options or 'dbhost' not in options:
-        print('E: Missing database config in ~/.pdnssync.ini')
-        quit()
 
     for fname in args.files:
         parser.parse(fname)
@@ -100,26 +87,12 @@ def do_sync():
     print('%d error(s) and %d warning(s)' % (err, warn))
 
     if err == 0 and (not args.werror or warn == 0):
-        db = Database(options['type'], options['database'], options['dbuser'], options['dbpassword'], options['dbhost'])
+        db = Database()
         sync(db)
     else:
         print('Errors found, not syncing')
 
 
 def do_export():
-    aparser = argparse.ArgumentParser()
-    aparser.add_argument("-c", "--config", help="specify config file")
-    args = aparser.parse_args()
-
-    if args.config:
-        config = args.config
-    else:
-        config = os.environ['HOME'] + '/.pdnssync.ini'
-
-    options = parse_config(config)
-    if 'type' not in options or 'database' not in options or 'dbuser' not in options or 'dbpassword' not in options or 'dbhost' not in options:
-        print('E: Missing database config in ~/.pdnssync.ini')
-        quit()
-
-    db = Database(options['type'], options['database'], options['dbuser'], options['dbpassword'], options['dbhost'])
+    db = Database()
     export(db)

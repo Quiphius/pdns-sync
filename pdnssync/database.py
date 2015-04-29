@@ -1,3 +1,5 @@
+import os
+
 class DBDomain(object):
     def __init__(self, dbid, name, nstype):
         self.name = name
@@ -14,7 +16,13 @@ class DBRecord(object):
 
 
 class Database(object):
-    def __init__(self, dbtype, database, user, password, host):
+    def __init__(self):
+        dbtype = os.environ['PDNS_DBTYPE']
+        database = os.environ['PDNS_DB']
+        user = os.environ['PDNS_DBUSER']
+        password = os.environ['PDNS_DBPASSWORD']
+        host = os.environ['PDNS_DBHOST']
+
         if dbtype == 'postgresql':
             import psycopg2
             self.conn = psycopg2.connect(database=database, user=user, password=password, host=host)
