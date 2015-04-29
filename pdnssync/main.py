@@ -79,10 +79,12 @@ def do_sync():
         config = args.config
     else:
         config = os.environ['HOME'] + '/.pdnssync.ini'
+        
+    print('PDNS_FOO = %s' % os.environ['PDNS_FOO'])
 
     options = parse_config(config)
     if 'type' not in options or 'database' not in options or 'dbuser' not in options or 'dbpassword' not in options or 'dbhost' not in options:
-        print('Missing database config in ~/.pdnssync.ini')
+        print('E: Missing database config in ~/.pdnssync.ini')
         quit()
 
     for fname in args.files:
@@ -105,9 +107,9 @@ def do_sync():
 
 
 def do_export():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("-c", "--config", help="specify config file")
-    args = parser.parse_args()
+    aparser = argparse.ArgumentParser()
+    aparser.add_argument("-c", "--config", help="specify config file")
+    args = aparser.parse_args()
 
     if args.config:
         config = args.config
@@ -116,7 +118,7 @@ def do_export():
 
     options = parse_config(config)
     if 'type' not in options or 'database' not in options or 'dbuser' not in options or 'dbpassword' not in options or 'dbhost' not in options:
-        print('Missing database config in ~/.pdnssync.ini')
+        print('E: Missing database config in ~/.pdnssync.ini')
         quit()
 
     db = Database(options['type'], options['database'], options['dbuser'], options['dbpassword'], options['dbhost'])

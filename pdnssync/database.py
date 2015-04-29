@@ -1,31 +1,28 @@
 class DBDomain(object):
-    def __init__(self, id, name, type):
+    def __init__(self, dbid, name, nstype):
         self.name = name
-        self.id = id
-        self.type = type
+        self.id = dbid
+        self.type = nstype
 
 
 class DBRecord(object):
-    def __init__(self, id, data, ttl, prio):
-        self.id = id
+    def __init__(self, dbid, data, ttl, prio):
+        self.id = dbid
         self.data = data
         self.ttl = ttl
         self.prio = prio
 
 
 class Database(object):
-    def __init__(self, type, database, user, password, host):
-        if type == 'postgresql':
+    def __init__(self, dbtype, database, user, password, host):
+        if dbtype == 'postgresql':
             import psycopg2
             self.conn = psycopg2.connect(database=database, user=user, password=password, host=host)
-        elif type == 'mysql':
+        elif dbtype == 'mysql':
             import MySQLdb
             self.conn = MySQLdb.connect(db=database, user=user, passwd=password, host=host)
-        elif type == 'sqlite':
-            import sqlite3
-            self.conn = sqlite3.connect(database=database)
         else:
-            print('E: no such database type')
+            print('E: no such database dbtype')
             quit()
 
     def get_domains(self):
@@ -65,21 +62,21 @@ class Database(object):
         cur.close()
         return ret
 
-    def create_record(self, zone, name, type, data, ttl, prio):
+    def create_record(self, zone, name, nstype, data, ttl, prio):
         cur = self.conn.cursor()
-        cur.execute('INSERT INTO records (domain_id, name, type, content, ttl, prio) SELECT id, %s, %s, %s, %s, %s FROM domains WHERE name = %s', (name, type, data, ttl, prio, zone))
+        cur.execute('INSERT INTO records (domain_id, name, type, content, ttl, prio) SELECT id, %s, %s, %s, %s, %s FROM domains WHERE name = %s', (name, nstype, data, ttl, prio, zone))
         self.conn.commit()
         cur.close()
 
-    def update_record(self, id, ttl, prio):
+    def update_record(self, dbid, ttl, prio):
         cur = self.conn.cursor()
-        cur.execute('UPDATE records SET ttl = %s, prio = %s where id = %s', (ttl, prio, id))
+        cur.execute('UPDATE records SET ttl = %s, prio = %s where id = %s', (ttl, prio, dbid))
         self.conn.commit()
         cur.close()
 
-    def delete_record(self, id):
+    def delete_record(self, dbid):
         cur = self.conn.cursor()
-        cur.execute('DELETE FROM records WHERE id = %s', (id,))
+        cur.execute('DELETE FROM records WHERE id = %s', (dbid,))
         self.conn.commit()
         cur.close()
 
