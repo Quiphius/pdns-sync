@@ -1,6 +1,4 @@
 import argparse
-import os
-from config import parse_config
 from database import Database
 from parse import Parser
 from error import get_warn, get_err
