@@ -16,7 +16,7 @@ def sync(db):
     all_db_domains = db.get_domains()
     all_domains = parser.get_domains()
 
-    list_domains = all_domains.keys() 
+    list_domains = all_domains.keys()
     list_db_domains = all_db_domains.keys()
     create_list = list(set(list_domains) - set(list_db_domains))
     delete_list = list(set(list_db_domains) - set(list_domains))
@@ -61,7 +61,12 @@ def export(db):
             if i[1] == 'CNAME':
                 for j in records[i]:
                     print "C %s %s" % (i[0], j.data)
-
+            if i[1] == 'SRV':
+                for j in records[i]:
+                    print "S %s %s %s" % (i[0], j.prio, j.data)
+            if i[1] == 'TXT':
+                for j in records[i]:
+                    print "X %s %s" % (i[0], j.data)
         print
 
 

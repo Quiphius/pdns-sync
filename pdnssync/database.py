@@ -1,5 +1,6 @@
 import os
 
+
 class DBDomain(object):
     def __init__(self, dbid, name, nstype):
         self.name = name

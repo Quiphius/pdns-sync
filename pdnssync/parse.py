@@ -5,7 +5,7 @@ from record import RecordList
 
 
 class Parser(object):
-    
+
     def __init__(self):
         self.all_domains = {}
         self.all_records = RecordList()
@@ -15,7 +15,7 @@ class Parser(object):
         row = 0
         cur_domain = None
         cur_parent = None
-    
+
         try:
             for line in open(fname):
                 row += 1
@@ -24,7 +24,7 @@ class Parser(object):
                     continue
                 s = line.split()
                 sl = len(s)
-    
+
                 if s[0] == 'T':
                     if sl == 2:
                         if s[1].isdigit() and int(s[1]) > 0:
@@ -33,7 +33,7 @@ class Parser(object):
                             fwarning('Not a valid TTL value', fname, row)
                     else:
                         fwarning('No arguments for TTL value', fname, row)
-    
+
                 elif s[0] == 'D':
                     if s[1] not in self.all_domains:
                         if sl == 4 or sl == 8:
@@ -47,7 +47,7 @@ class Parser(object):
                             ferror('Wrong number of arguments for domain', fname, row)
                     else:
                         ferror('Duplicate domain %s' % s[1], fname, row)
-    
+
                 elif s[0] == 'N':
                     if sl > 1:
                         for ns in s[1:]:
@@ -56,7 +56,7 @@ class Parser(object):
                                 cur_parent.add_record(cur_domain.name, 'NS', ns, 0, cur_ttl)
                     else:
                         fwarning('No arguments for NS', fname, row)
-    
+
                 elif s[0] == 'M':
                     if sl > 1:
                         prio = 10
@@ -67,18 +67,28 @@ class Parser(object):
                                 cur_domain.add_record(cur_domain.name, 'MX', x, prio, cur_ttl)
                     else:
                         fwarning('No arguments for MX', fname, row)
-    
+
                 elif s[0] == 'C':
                     if sl == 3:
                         self.all_records.add_record(s[1], 'CNAME', s[2], 0, cur_ttl)
                     else:
                         fwarning('Wrong number of arguments for CNAME', fname, row)
-    
+
                 elif s[0] == 'S':
                     if sl == 6:
                         self.all_records.add_record(s[1], 'SRV', '%s %s %s' % (s[3], s[4], s[5]), s[2], cur_ttl)
                     else:
                         fwarning('Wrong number of arguments for SRV', fname, row)
+
+                elif s[0] == 'X':
+                    if sl > 1:
+                        txt = ' '.join(s[2:])
+                        if txt[0] == '"' and txt[-1] == '"':
+                            self.all_records.add_record(s[1], 'TXT', ' '.join(s[2:]), 0, cur_ttl)
+                        else:
+                            fwarning('Text not enclosed with " for TXT', fname, row)
+                    else:
+                        fwarning('Wrong number of arguments for TXT', fname, row)
 
                 elif check_ipv4(s[0]):
                     if sl > 1:
@@ -92,7 +102,7 @@ class Parser(object):
                             self.all_records.add_record_uniq(ptr, 'PTR', x, 0, cur_ttl, force)
                     else:
                         fwarning('No names for A', fname, row)
-    
+
                 elif check_ipv6(s[0]):
                     if sl > 1:
                         for x in s[1:]:
@@ -105,13 +115,12 @@ class Parser(object):
                             self.all_records.add_record_uniq(ptr, 'PTR', x, 0, cur_ttl, force)
                     else:
                         fwarning('No names for AAAA', fname, row)
-    
+
                 else:
                     fwarning('Invalid row', fname, row)
         except IOError as e:
             ioerror(e.strerror, fname)
-    
-    
+
     def assign(self):
         for i in self.all_records.records:
             r = self.all_records.records[i]
