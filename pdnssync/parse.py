@@ -76,7 +76,7 @@ class Parser(object):
 
                 elif s[0] == 'S':
                     if sl == 6:
-                        self.all_records.add_record(s[1], 'SRV', '%s %s %s' % (s[3], s[4], s[5]), s[2], cur_ttl)
+                        self.all_records.add_record(s[1], 'SRV', '%s %s %s' % (s[3], s[4], s[5]), int(s[2]), cur_ttl)
                     else:
                         fwarning('Wrong number of arguments for SRV', fname, row)
 
