@@ -18,11 +18,11 @@ class DBRecord(object):
 
 class Database(object):
     def __init__(self):
-        dbtype = os.environ['PDNS_DBTYPE']
-        database = os.environ['PDNS_DB']
-        user = os.environ['PDNS_DBUSER']
-        password = os.environ['PDNS_DBPASSWORD']
-        host = os.environ['PDNS_DBHOST']
+        dbtype = os.getenv('PDNS_DBTYPE', 'postgresql')
+        database = os.getenv('PDNS_DB', 'pdns')
+        user = os.getenv('PDNS_DBUSER', '')
+        password = os.getenv('PDNS_DBPASSWORD', '')
+        host = os.getenv('PDNS_DBHOST', 'localhost')
 
         if dbtype == 'postgresql':
             import psycopg2
