@@ -1,6 +1,8 @@
 import os
 from datetime import datetime
 from record import Record
+from error import warning, error
+from utils import has_address
 
 
 class Domain(object):
@@ -86,5 +88,29 @@ class Domain(object):
             db.update_soa(self.name, self.soa_content)
             os.system('pdnssec rectify-zone %s' % self.name)
 
-    def validate(self):
+    def validate(self, domains):
         print 'Validate %s' % self.name
+        
+        if (self.name, 'NS') in self.records:
+            ns_rec = self.records[(self.name, 'NS')]
+            ns = [n.data for n in ns_rec]
+            if self.ns not in ns:
+                warning('Nameserver %s not in NS list' % self.ns)
+    
+            dup = set([n for n in ns if ns.count(n) > 1])
+            if dup:
+                warning('Duplicate NS records %s in domain %s' % (','.join(dup), self.name))
+            
+            for n in ns:
+                if not has_address(n, domains):
+                    warning('Address for NS %s not found' % n)
+        else:
+            error('No nameservers for domain %s' % self.name)
+
+        
+        if (self.name, 'MX') in self.records:
+            mx_rec = self.records[(self.name, 'MX')]
+            mx = [m.data for m in mx_rec]
+            for m in mx:
+                if not has_address(m, domains):
+                    warning('Address for MX %s not found' % m)

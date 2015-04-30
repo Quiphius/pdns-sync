@@ -9,7 +9,7 @@ parser = Parser()
 def validate():
     domains = parser.get_domains()
     for d in domains:
-        domains[d].validate()
+        domains[d].validate(domains)
 
 
 def sync(db):

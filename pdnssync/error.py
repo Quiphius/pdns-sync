@@ -2,21 +2,21 @@ _warn = 0
 _err = 0
 
 
-def fwarning(msg, fname, row):
+def warning(msg, fname=None, row=0):
     global _warn
-    print('W: %s in file %s line %d' % (msg, fname, row))
+    if fname:
+        print('W: %s in file %s line %d' % (msg, fname, row))
+    else:
+        print('W: %s' % msg)
     _warn += 1
 
 
-def warning(msg):
-    global _warn
-    print('W: %s' % msg)
-    _warn += 1
-
-
-def ferror(msg, fname, row):
+def error(msg, fname=None, row=0):
     global _err
-    print('E: %s in file %s line %d' % (msg, fname, row))
+    if fname:
+        print('E: %s in file %s line %d' % (msg, fname, row))
+    else:
+        print('E: %s' % msg)
     _err += 1
 
 

@@ -1,6 +1,6 @@
 from domain import Domain
 from utils import find_domain, check_ipv4, check_ipv6, gen_ptr_ipv4, gen_ptr_ipv6, expand_ipv6
-from error import fwarning, ferror, ioerror, warning
+from error import warning, error, ioerror
 from record import RecordList
 
 
@@ -30,9 +30,9 @@ class Parser(object):
                         if s[1].isdigit() and int(s[1]) > 0:
                             cur_ttl = int(s[1])
                         else:
-                            fwarning('Not a valid TTL value', fname, row)
+                            warning('Not a valid TTL value', fname, row)
                     else:
-                        fwarning('No arguments for TTL value', fname, row)
+                        warning('No arguments for TTL value', fname, row)
 
                 elif s[0] == 'D':
                     if s[1] not in self.all_domains:
@@ -44,9 +44,9 @@ class Parser(object):
                             cur_parent = find_domain(s[1], self.all_domains)
                             self.all_domains[s[1]] = cur_domain
                         else:
-                            ferror('Wrong number of arguments for domain', fname, row)
+                            error('Wrong number of arguments for domain', fname, row)
                     else:
-                        ferror('Duplicate domain %s' % s[1], fname, row)
+                        error('Duplicate domain %s' % s[1], fname, row)
 
                 elif s[0] == 'N':
                     if sl > 1:
@@ -55,7 +55,7 @@ class Parser(object):
                             if cur_parent:
                                 cur_parent.add_record(cur_domain.name, 'NS', ns, 0, cur_ttl)
                     else:
-                        fwarning('No arguments for NS', fname, row)
+                        warning('No arguments for NS', fname, row)
 
                 elif s[0] == 'M':
                     if sl > 1:
@@ -66,19 +66,19 @@ class Parser(object):
                             else:
                                 cur_domain.add_record(cur_domain.name, 'MX', x, prio, cur_ttl)
                     else:
-                        fwarning('No arguments for MX', fname, row)
+                        warning('No arguments for MX', fname, row)
 
                 elif s[0] == 'C':
                     if sl == 3:
                         self.all_records.add_record(s[1], 'CNAME', s[2], 0, cur_ttl)
                     else:
-                        fwarning('Wrong number of arguments for CNAME', fname, row)
+                        warning('Wrong number of arguments for CNAME', fname, row)
 
                 elif s[0] == 'S':
                     if sl == 6:
                         self.all_records.add_record(s[1], 'SRV', '%s %s %s' % (s[3], s[4], s[5]), int(s[2]), cur_ttl)
                     else:
-                        fwarning('Wrong number of arguments for SRV', fname, row)
+                        warning('Wrong number of arguments for SRV', fname, row)
 
                 elif s[0] == 'X':
                     if sl > 1:
@@ -86,9 +86,9 @@ class Parser(object):
                         if txt[0] == '"' and txt[-1] == '"':
                             self.all_records.add_record(s[1], 'TXT', ' '.join(s[2:]), 0, cur_ttl)
                         else:
-                            fwarning('Text not enclosed with " for TXT', fname, row)
+                            warning('Text not enclosed with " for TXT', fname, row)
                     else:
-                        fwarning('Wrong number of arguments for TXT', fname, row)
+                        warning('Wrong number of arguments for TXT', fname, row)
 
                 elif check_ipv4(s[0]):
                     if sl > 1:
@@ -101,7 +101,7 @@ class Parser(object):
                             ptr = gen_ptr_ipv4(s[0])
                             self.all_records.add_record_uniq(ptr, 'PTR', x, 0, cur_ttl, force)
                     else:
-                        fwarning('No names for A', fname, row)
+                        warning('No names for A', fname, row)
 
                 elif check_ipv6(s[0]):
                     if sl > 1:
@@ -114,10 +114,10 @@ class Parser(object):
                             ptr = gen_ptr_ipv6(expand_ipv6(s[0]))
                             self.all_records.add_record_uniq(ptr, 'PTR', x, 0, cur_ttl, force)
                     else:
-                        fwarning('No names for AAAA', fname, row)
+                        warning('No names for AAAA', fname, row)
 
                 else:
-                    fwarning('Invalid row', fname, row)
+                    warning('Invalid row', fname, row)
         except IOError as e:
             ioerror(e.strerror, fname)
 

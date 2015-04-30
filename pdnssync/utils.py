@@ -28,6 +28,11 @@ def find_domain(a, l):
     return None
 
 
+def has_address(r, l):
+    d = find_domain(r, l)
+    return (r, 'A') in d.records
+
+
 def gen_ptr_ipv4(a):
     ta = a.split('.')
     ta.reverse()
