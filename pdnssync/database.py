@@ -20,7 +20,7 @@ class Database(object):
     def __init__(self):
         dbtype = os.getenv('PDNS_DBTYPE', 'postgresql')
         database = os.getenv('PDNS_DB', 'pdns')
-        user = os.getenv('PDNS_DBUSER', '')
+        user = os.getenv('PDNS_DBUSER', 'pdns')
         password = os.getenv('PDNS_DBPASSWORD', '')
         host = os.getenv('PDNS_DBHOST', 'localhost')
 
