@@ -26,8 +26,8 @@ setup(
                             'pdns-export=pdnssync.main:do_export'],
     },
     install_requires=[
-        'MySQL-python',
-        'psycopg2',
+        #'MySQL-python',
+        #'psycopg2',
     ],
     platforms=[
         'any',

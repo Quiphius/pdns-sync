@@ -1,7 +1,7 @@
 import argparse
-from database import Database
-from parse import Parser
-from error import get_warn, get_err
+from pdnssync.database import Database
+from pdnssync.parse import Parser
+from pdnssync.error import get_warn, get_err
 
 parser = Parser()
 
@@ -32,42 +32,42 @@ def sync(db):
 def export(db):
     all_db_domain = db.get_domains()
     for d in all_db_domain:
-        print "# %s" % d
+        print('# %s' % d)
         records = db.get_records(d)
         soa = records[(d, 'SOA')][0].data.split(' ')
-        print "D %s %s %s" % (d, soa[0], soa[1])
+        print('D %s %s %s' % (d, soa[0], soa[1]))
 
         if (d, 'NS') in records:
             ns = records[(d, 'NS')]
             ns_names = []
             for i in ns:
                 ns_names.append(i.data)
-            print "N %s" % ' '.join(ns_names)
+            print('N %s' % ' '.join(ns_names))
 
         if (d, 'MX') in records:
             mx = records[(d, 'MX')]
             mx_names = []
             for i in mx:
                 mx_names.append("%s %s" % (i.prio, i.data))
-            print "M %s" % ' '.join(mx_names)
+            print('M %s' % ' '.join(mx_names))
 
         for i in records:
             if i[1] == 'A':
                 for j in records[i]:
-                    print "%s %s" % (j.data, i[0])
+                    print('%s %s' % (j.data, i[0]))
             if i[1] == 'AAAA':
                 for j in records[i]:
-                    print "%s %s" % (j.data, i[0])
+                    print('%s %s' % (j.data, i[0]))
             if i[1] == 'CNAME':
                 for j in records[i]:
-                    print "C %s %s" % (i[0], j.data)
+                    print('C %s %s' % (i[0], j.data))
             if i[1] == 'SRV':
                 for j in records[i]:
-                    print "S %s %s %s" % (i[0], j.prio, j.data)
+                    print('S %s %s %s' % (i[0], j.prio, j.data))
             if i[1] == 'TXT':
                 for j in records[i]:
-                    print "X %s %s" % (i[0], j.data)
-        print
+                    print('X %s %s' % (i[0], j.data))
+        print()
 
 
 def do_sync():

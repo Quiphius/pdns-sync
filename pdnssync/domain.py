@@ -1,8 +1,8 @@
 import os
 from datetime import datetime
-from record import Record
-from error import warning, error
-from utils import has_address
+from pdnssync.record import Record
+from pdnssync.error import warning, error
+from pdnssync.utils import has_address
 
 
 class Domain(object):
@@ -89,25 +89,24 @@ class Domain(object):
             os.system('pdnssec rectify-zone %s' % self.name)
 
     def validate(self, domains):
-        print 'Validate %s' % self.name
-        
+        print('Validate %s' % self.name)
+
         if (self.name, 'NS') in self.records:
             ns_rec = self.records[(self.name, 'NS')]
             ns = [n.data for n in ns_rec]
             if self.ns not in ns:
                 warning('Nameserver %s not in NS list' % self.ns)
-    
+
             dup = set([n for n in ns if ns.count(n) > 1])
             if dup:
                 warning('Duplicate NS records %s in domain %s' % (','.join(dup), self.name))
-            
+
             for n in ns:
                 if not has_address(n, domains):
                     warning('Address for NS %s not found' % n)
         else:
             error('No nameservers for domain %s' % self.name)
 
-        
         if (self.name, 'MX') in self.records:
             mx_rec = self.records[(self.name, 'MX')]
             mx = [m.data for m in mx_rec]
