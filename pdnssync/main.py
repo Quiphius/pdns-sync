@@ -8,7 +8,7 @@ parser = Parser()
 
 def validate():
     domains = parser.get_domains()
-    for d in domains:
+    for d in sorted(domains):
         domains[d].validate(domains)
 
 
@@ -24,7 +24,7 @@ def sync(db):
     db.create_domains(create_list)
     db.delete_domains(delete_list)
 
-    for i in list_domains:
+    for i in sorted(list_domains):
         d = all_domains[i]
         d.sync_domain(db)
 
