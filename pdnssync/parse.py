@@ -1,3 +1,4 @@
+import re
 from pdnssync.domain import Domain
 from pdnssync.utils import find_domain, check_ipv4, check_ipv6, gen_ptr_ipv4, gen_ptr_ipv6, expand_ipv6
 from pdnssync.error import warning, error, ioerror
@@ -22,7 +23,7 @@ class Parser(object):
                 line = line.rstrip('\n\r')
                 if not line or line[0] == '#':
                     continue
-                s = line.split()
+                s = re.split('\s*', line)
                 sl = len(s)
 
                 if s[0] == 'T':
