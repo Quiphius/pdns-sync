@@ -21,6 +21,15 @@ It's possible to have a folder with the files with a common extention (e.g. .txt
 run in that folder::
 
   pdns-sync *.dns
+  
+Options
+-------
+For ``pdns-sync`` there are these options
+
+-h, --help     show help
+-v, --verbose  increase output verbosity
+-w, --werror   also break on warnings
+
 
 Setup for use with git
 ----------------------
@@ -167,3 +176,8 @@ This is an example of a domain and a reverse domain in a file::
 
   D 2.0.192.in-addr.arpa ns1.example.com hostmaster@example.com
   N ns1.example.com ns2.example.com
+
+Export
+------
+To export an existing database use the ``pdns-export`` command, it will export the database to stdout. Set the database options with
+the sam environment variables.
