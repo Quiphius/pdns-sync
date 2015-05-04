@@ -14,7 +14,7 @@ Usage
 There are two tools included in the package, ``pdns-sync`` for syncronizing the files and the database
 and ``pdns-export`` for exporting an existing database to stdout.
 
-The recomended set-up is to have all files in a git repos with a common extention (e.g. <file>.dns) and
+The recomended set-up is to have all files in a git repos with a common extension (e.g. <file>.dns) and
 use ``pdns-sync`` in a hook.
 
 It's possible to have a folder with the files with a common extention (e.g. .txt or .dns) for the zones in a folder and
