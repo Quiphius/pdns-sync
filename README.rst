@@ -5,9 +5,9 @@ MySQL and PostgreSQL.
 
 Installation
 ------------
-.. The easiest way to install the package is via ``easy_install`` or ``pip``::
-   $ pip install pdnssync
-   There are also Debian/Ubuntu packages avaible
+The easiest way to install the package is via ``easy_install`` or ``pip``::
+
+  $ pip install pdnssync
 
 Usage
 -----

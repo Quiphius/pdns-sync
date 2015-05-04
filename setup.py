@@ -16,7 +16,7 @@ setup(
         'Topic :: System :: Systems Administration',
     ],
     keywords='powerdns hosts sync postgresql',
-    url='http://github.com/storborg/funniest',
+    url='https://github.com/Quiphius/pdns-sync',
     author='Mikael Olofsson',
     author_email='mikael.olofsson@oet.nu',
     license='MIT',
