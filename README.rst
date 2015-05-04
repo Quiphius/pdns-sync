@@ -165,5 +165,5 @@ This is an example of a domain and a reverse domain in a file::
   192.0.2.25 mx1.example.com
   192.0.2.26 mx2.example.com
 
-  D 2. 0.192.in-addr.arpa ns1.example.com hostmaster@example.com
+  D 2.0.192.in-addr.arpa ns1.example.com hostmaster@example.com
   N ns1.example.com ns2.example.com
