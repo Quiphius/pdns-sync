@@ -50,24 +50,30 @@ class Parser(object):
                         error('Duplicate domain %s' % s[1], fname, row)
 
                 elif s[0] == 'N':
-                    if sl > 1:
-                        for ns in s[1:]:
-                            cur_domain.add_record(cur_domain.name, 'NS', ns, 0, cur_ttl)
-                            if cur_parent:
-                                cur_parent.add_record(cur_domain.name, 'NS', ns, 0, cur_ttl)
+                    if cur_domain:
+                        if sl > 1:
+                            for ns in s[1:]:
+                                cur_domain.add_record(cur_domain.name, 'NS', ns, 0, cur_ttl)
+                                if cur_parent:
+                                    cur_parent.add_record(cur_domain.name, 'NS', ns, 0, cur_ttl)
+                        else:
+                            warning('No arguments for NS', fname, row)
                     else:
-                        warning('No arguments for NS', fname, row)
+                        error('No domain defines for NS', fname, row)
 
                 elif s[0] == 'M':
-                    if sl > 1:
-                        prio = 10
-                        for x in s[1:]:
-                            if x.isdigit():
-                                prio = int(x)
-                            else:
-                                cur_domain.add_record(cur_domain.name, 'MX', x, prio, cur_ttl)
+                    if cur_domain:
+                        if sl > 1:
+                            prio = 10
+                            for x in s[1:]:
+                                if x.isdigit():
+                                    prio = int(x)
+                                else:
+                                    cur_domain.add_record(cur_domain.name, 'MX', x, prio, cur_ttl)
+                        else:
+                            warning('No arguments for MX', fname, row)
                     else:
-                        warning('No arguments for MX', fname, row)
+                        error('No domain defined for MX', fname, row)
 
                 elif s[0] == 'C':
                     if sl == 3:
