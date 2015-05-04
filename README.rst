@@ -66,7 +66,8 @@ and create the hook file ``dns/.git/hooks/post-receive`` with the content::
   cd $GIT_WORK_TREE
   pdns-sync *.dns
 
-The environment variables are for the database configuration and the values above are the default except for the password 
+The environment variables are for the database configuration and the values above are the default except for the password
+that is empty as default.
 
 Make the hook executable::
 
