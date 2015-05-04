@@ -74,23 +74,98 @@ Just use your own virtualenv name if it's not pdnssync.
 To use, just clone the repos as normal, add, delete or change the files, checkin your changes and when the repos is pushed
 all the changes will be applied if there are no errors and if there are errors, fix them and try to push again.
 
-To increase the security 
+To increase the security change the shell for the dns user to git-shell::
+
+  sudo chsh -s /usr/bin/git-shell dns
 
 Format
 ------
+The files used by ``pdns-sync`` are normal hosts files with additional rows for non A or AAAA records.
+
+**Normal A or AAAA**
+  Like a hosts file with either an ipv4 or an ipv6 address and also works with multiple hostnames on each row
+  When an address has multiple hostnames the first will be used as the reverse address unless one is tagged
+  with an ~ sign, then it will be used as the reverse instead.
+
+example::
+  
+  192.0.2.4 foo.example.com
+  192.0.2.5 bar.example.com baz.example.com
+  192.0.2.5 ~ptr.example.com
+  2001:db8::44 ipv6.example.com
+
+**Multiple addresses for a hostname**
+  A hostname can have multiple addresses for used in DNS Round Robin
+
+example::
+
+  192.0.2.80 www.example.com
+  192.0.2.81 www.example.com
+
+**Defining a domain**
+  Start a line with a D to define a domain followed by the name, primary nameserver and responsible email address. The
+  field can be set by adding four additional arguments, refresh, retry, expire and minimum. The default values are
+  86400 7200 604800 300. The serial is automagicaly generated using the date and a counter.
+  Following the domain definition are a line begining with an N and a list of nameservers for the domain and an optional line begining with
+  M and a list with mail exchangers, the prio is default 10 but can be set on the line.
+  Don't forget to define your reverse zones and expand your ipv6 reverse zones.
+
+example::
+
+  D example.com ns1.example.com hostmaster@example.com
+  N ns1.example.com ns2.example.com
+  M mx1.example.com 20 mx2.example.com
+
+  D example.org ns1.example.com hostmaster@example.com 172800 7200 604800 600
+  N ns1.example.com ns2.example.com
+  M mx1.example.com
+  
+  D 2.0.192.in-addr.arpa ns1.example.com hostmaster@example.com
+  N ns1.example.com ns2.example.com
+  
+  D 8.b.d.0.1.0.0.2.ip6.arpa ns1.example.com hostmaster@example.com
+  N ns1.example.com ns2.example.com
+
+**Aliases**
+  To create a CNAME add a line begining with C, the alias and the target.
+
+example::
+
+  C mail.example.com mx1.example.com
+
+**Change the TTL**
+  The TTL for the records defaults to 3600 and can be change with a line begining with T and a number for the new TTL, this TTL will be used
+  for the rest of the file or until a new value is set.
+
+example::
+
+  T 600
+  192.0.2.80 www.example.com
+  T 3600
+  192.0.2.25 mail.example.com
+
+**Service records**
+  To creat an SRV records add a line begining with S, the service name, prio, weight, port and target.
+
+example::
+
+  S _sip._tcp.example.com 1 2 5060 sip.example.com
+
+Example
+-------
 This is an example of a domain and a reverse domain in a file::
 
   D example.com ns1.example.com hostmaster@example.com
   N ns1.example.com ns2.example.com
   M mx1.example.com 20 mx2.example.com
 
-  192.168.0.80 www.example.com
+  192.0.2.80 www.example.com
 
-  192.168.0.53 ns1.example.com
-  192.168.0.54 ns2.example.com
+  192.0.2.53 ns1.example.com
+  192.0.2.54 ns2.example.com
 
-  192.168.0.25 mx1.example.com
-  192.168.0.26 mx2.example.com
+  192.0.2.25 mx1.example.com
+  192.0.2.26 mx2.example.com
 
-  D 0.168.192.in-addr.arpa ns1.example.com hostmaster@example.com
+  D 2. 0.192.in-addr.arpa ns1.example.com hostmaster@example.com
   N ns1.example.com ns2.example.com
