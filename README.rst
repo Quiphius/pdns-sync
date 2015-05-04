@@ -114,8 +114,8 @@ example::
   Start a line with a D to define a domain followed by the name, primary nameserver and responsible email address. The
   field can be set by adding four additional arguments, refresh, retry, expire and minimum. The default values are
   86400 7200 604800 300. The serial is automagicaly generated using the date and a counter.
-  Following the domain definition are a line begining with an N and a list of nameservers for the domain and an optional line begining with
-  M and a list with mail exchangers, the prio is default 10 but can be set on the line.
+  Following the domain definition are a line begining with an N and a list of nameservers for the domain and an optional
+  line begining with M and a list with mail exchangers, the prio is default 10 but can be set on the line.
   Don't forget to define your reverse zones and expand your ipv6 reverse zones.
 
 example::
@@ -142,8 +142,8 @@ example::
   C mail.example.com mx1.example.com
 
 **Change the TTL**
-  The TTL for the records defaults to 3600 and can be change with a line begining with T and a number for the new TTL, this TTL will be used
-  for the rest of the file or until a new value is set.
+  The TTL for the records defaults to 3600 and can be change with a line begining with T and a number for the new TTL,
+  this TTL will be used for the rest of the file or until a new value is set.
 
 example::
 
@@ -151,6 +151,13 @@ example::
   192.0.2.80 www.example.com
   T 3600
   192.0.2.25 mail.example.com
+
+**Text records**
+  Text records can be added with lines begining with X and the text enclosed with ""
+
+example::
+
+  X www.example.com "is an apache server"
 
 **Service records**
   To creat an SRV records add a line begining with S, the service name, prio, weight, port and target.
